@@ -2,88 +2,116 @@ document.getElementById('snake');
 const canvas = document.getElementById("snake");
 const ctx = canvas.getContext("2d");
 
+
 let snakeX = 200;
 let snakeY = 200;
 let snake = [
     {
-        x: 200,
-        y: 200
+        x:200,
+        y:200
     },
     {
-        x: 220,
-        y: 200
+        x:220,
+        y:200
     }
 ];
-let direction = null;
 
 let foodX;
 let foodY;
+let direction = null;
 
 // draw the background
 function drawBackground() {
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, 400, 400);
+ctx.fillStyle = "black";
+ctx.fillRect(0, 0, 400, 400);
 }
 
 // draw the snake
 function drawSnake(){
     ctx.fillStyle = "white";
-    for(let index = 0; index < snake.length; index++) {
+
+    for (let index = 0; index < snake.length; index++) {
+    
         ctx.fillRect(snake[index].x, snake[index].y, 20, 20);
     }
 }
 
-function drawFood() {
-    ctx.fillStyle = "Red";
-    ctx.fillRect(foodX, foodY, 20, 20);
-}
-
 function update() {
 
-    let tailIndex = snake.length - 1;
-    let tailX = snake[tailIndex].x;
-    let tailY = snake[tailIndex].y;
+    let tailIndex = snake.length -1;
+    let tailX =[tailIndex].x; 
+    let tailY =[tailIndex].y;
 
-    if(direction != null) {
-    for(let index = snake.length - 1; index > 0; index--) {
-        snake[index].x = snake[index - 1].x;
-        snake[index].y = snake[index - 1].y;
+    if(direction == null){
+        drawBackground();
+        drawSnake();
+        drawFood();
+        return;
     }
-    }
+    let headX = snake[0].x;
+    let headY = snake[0].y;
+
+
+
+
 
     if(direction == 'right') {
-        if(snake[0].x < 380) {
-            snake[0].x +=20
-        } else {
-            gameOver();
-        }
+        if(headX < 380) {
+        headX += 20;
+    } else {
+        gameOver();
+    }
+
+
     } else if (direction == 'left') {
-        if(snake[0].x > 0) {
-            snake[0].x -=20;
+        if(headX > 0) {
+        headX -=20;
         } else {
             gameOver();
         }
+
+
     } else if (direction == 'up') {
-        if(snake[0].y > 0) {
-            snake[0].y-=20;
-        } else {
-            gameOver();
-        }
+        if(headY > 0) {
+        headY -= 20;
+    } else {
+        gameOver();
+    }
+
+
     } else if (direction == 'down') {
-        if(snake[0].y < 380) {
-            snake[0].y +=20;
-        } else {
+        if(headY < 380) {
+        headY +=20;
+    } else {
+        gameOver();
+    }
+    }   
+    for (let index = 0; index < snake.length; index++){
+        if(snake[index].x == headX && snake[index].y == headY) {
             gameOver();
+            return;
+        }
+    }
+    
+    if (direction != null){
+        for(let index = snake.length -1; index >0; index--){
+            snake[index].x = snake[index-1].x;
+            snake[index].y = snake[index-1].y;
         }
     }
 
-    if(foodX == snake[0].x && foodY == snake[0].y) {
+    snake[0].x = headX;
+    snake[0].y = headY;
+    
+    if (foodX == snake[0].x && foodY == snake[0].y) {
+    
         snake.push({
-            x: tailX,
-            y: tailY
+            x:tailX,
+            y:tailY
         });
-        spawnFood();
-    }    
+
+    spawnFood();
+  }  
 
     drawBackground();
     drawSnake();
@@ -92,25 +120,43 @@ function update() {
 
 function changeDirection(event) {
     if(event.code == 'ArrowUp') {
-        direction = 'up';
+        if(direction !='down'){
+           direction = 'up';
+        }
     } else if (event.code == 'ArrowDown') {
-        direction = 'down';
+        if(direction !='up'){
+           direction = 'down';
+        }
+        
     } else if (event.code == 'ArrowLeft') {
-        direction = 'left';
+        if(direction !='right'){
+           direction = 'left';  
+        }
+    
     } else if (event.code == 'ArrowRight') {
-        direction = 'right';
+        if(direction != 'left'){
+           direction = 'right';
+        }
     }
-}
-
-function spawnFood() {
-    foodX = Math.floor(Math.random() * 20) * 20;
-    foodY = Math.floor(Math.random() * 20) * 20;
 }
 
 function gameOver() {
     direction = null;
-    alert("Game Over!")
+    alert("gameover");
 }
+
+function spawnFood() {
+    foodX = Math.floor(Math.random()* 20) *20;
+    foodY = Math.floor(Math.random()* 20) *20;
+}
+
+function drawFood() {
+    ctx.fillStyle = "red";
+ctx.fillRect(foodX, foodY, 20, 20);
+}
+
+
+
 
 setInterval(update, 200);
 addEventListener('keydown', changeDirection);
